@@ -18,20 +18,19 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-
 class _HomePageState extends State<HomePage> {
   String userName = "";
   String email = "";
   AuthService authService = AuthService();
   Stream? chats;
-  String id="";
+  String id = "";
   String photoUrl = "";
 
   bool isSearching = false;
   Stream? usersStream, chatRoomsStream;
   late String myName, myProfilePic, myUserName, myEmail;
   TextEditingController searchUsernameEditingController =
-  TextEditingController();
+      TextEditingController();
 
   getMyInfoFromSharedPreference() async {
     myName = await HelperFunctions().getDisplayName().toString();
@@ -66,95 +65,107 @@ class _HomePageState extends State<HomePage> {
     getChatRooms();
   }
 
-  chatRoomsList(AsyncSnapshot<QuerySnapshot> snapshot,String MyNickname) {
+  chatRoomsList(AsyncSnapshot<QuerySnapshot> snapshot, String MyNickname) {
     String nick, userNum;
     return ListView.builder(
-    scrollDirection: Axis.vertical,
-    shrinkWrap: true,
-    padding: EdgeInsets.symmetric(horizontal: 2.0),
-    itemCount: ((snapshot.data! as QuerySnapshot).docs.length),
-    itemBuilder: (BuildContext context, int index){
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      padding: EdgeInsets.symmetric(horizontal: 2.0),
+      itemCount: ((snapshot.data! as QuerySnapshot).docs.length),
+      itemBuilder: (BuildContext context, int index) {
+        return snapshot.data!.docs[index].get("user1") == MyNickname ||
+                snapshot.data!.docs[index].get("user2") == MyNickname
+            ? Padding(
+                padding: const EdgeInsets.symmetric(vertical: 9.0),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(40.0)),
+                  subtitle: snapshot.data!.docs[index]["lastMessage"] != ""
+                      ? Text(
+                          "${snapshot.data!.docs[index]["lastMessageSendBy"] == MyNickname ? "Вы" : snapshot.data!.docs[index]["lastMessageSendBy"]}: ${snapshot.data!.docs[index].get("lastMessage")}",
+                          style: TextStyle(color: Colors.white),
+                        )
+                      : Text(
+                          "нет сообщений",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                  title: snapshot.data!.docs[index].get("user1") == MyNickname
+                      ? Text(
+                          snapshot.data!.docs[index].get("user2"),
+                          style: TextStyle(color: Colors.white),
+                        )
+                      : Text(
+                          snapshot.data!.docs[index].get("user1"),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                  onTap: () async {
+                    snapshot.data!.docs[index].get("user1") == MyNickname
+                        ? nick = snapshot.data!.docs[index].get("user2")
+                        : nick = snapshot.data!.docs[index].get("user1");
 
-      return snapshot.data!.docs[index].get("user1")==MyNickname || snapshot.data!.docs[index].get("user2")==MyNickname
-          ?Padding(
-            padding: const EdgeInsets.symmetric(vertical: 9.0),
-            child: ListTile(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
-              subtitle:
-              snapshot.data!.docs[index]["lastMessage"]!=""
-              ?Text("${
+                    await FirebaseFirestore.instance
+                        .collection("chats")
+                        .where("chatId",
+                            isEqualTo:
+                                getChatRoomIdByUsernames(nick, MyNickname))
+                        .get()
+                        .then((QuerySnapshot snapshot) {
+                      if (snapshot.docs.isEmpty) {
+                        chatRoomId = getChatRoomIdByUsernames(MyNickname, nick);
+                      } else {
+                        chatRoomId = getChatRoomIdByUsernames(nick, MyNickname);
+                      }
+                    });
 
-                  snapshot.data!.docs[index]["lastMessageSendBy"]==MyNickname
-                      ?"Вы"
-                      :snapshot.data!.docs[index]["lastMessageSendBy"]
+                    await FirebaseFirestore.instance
+                        .collection("users")
+                        .where("fullName", isEqualTo: nick)
+                        .get()
+                        .then((QuerySnapshot snapshot) {
+                      id = snapshot.docs[0].id;
+                      photoUrl = snapshot.docs[0].get("profilePic");
+                    });
 
-              }: ${snapshot.data!.docs[index].get("lastMessage")}",style: TextStyle(color: Colors.white),)
-              :Text("нет сообщений",style: TextStyle(color: Colors.white),),
-              title:
-              snapshot.data!.docs[index].get("user1")==MyNickname
-                ?Text(snapshot.data!.docs[index].get("user2"),style: TextStyle(color: Colors.white),)
-                :Text(snapshot.data!.docs[index].get("user1"),style: TextStyle(color: Colors.white),)
-              ,
-              onTap: () async {
-                snapshot.data!.docs[index].get("user1")==MyNickname
-                ?nick=snapshot.data!.docs[index].get("user2")
-                :nick=snapshot.data!.docs[index].get("user1");
-
-
-                await FirebaseFirestore.instance.collection("chats").where("chatId",isEqualTo: getChatRoomIdByUsernames(nick, MyNickname)).get().then((QuerySnapshot snapshot) {
-                  if(snapshot.docs.isEmpty){
-                    chatRoomId=getChatRoomIdByUsernames(MyNickname,nick);
-                  }
-                  else{
-                    chatRoomId=getChatRoomIdByUsernames(nick, MyNickname);
-                  }
-                });
-
-                await FirebaseFirestore.instance.collection("users").where("fullName", isEqualTo: nick).get().then((QuerySnapshot snapshot) {
-                  id=snapshot.docs[0].id;
-                  photoUrl=snapshot.docs[0].get("profilePic");});
-
-                setState(() {
-                  nextScreen(context, ChatScreen(nick, MyNickname,photoUrl,id));
-                });
-                print(chatRoomId);
-
-                },
-
-              leading:
-              ClipRRect(
-
-                borderRadius: BorderRadius.circular(100.0),
-                child:
-                snapshot.data!.docs[index].get("user1")==MyNickname
-                    ?snapshot.data!.docs[index].get("user2_image")!=""
-                      ?Image.network(snapshot.data!.docs[index].get("user2_image"),
-
-                        width: 60,
-                        height: 100,
-                        fit: BoxFit.cover,)
-                      :Container(color: Colors.white,padding: EdgeInsets.all(8),child: Icon(Icons.person,size: 40))
-                    :snapshot.data!.docs[index].get("user1_image")!=""
-                      ?Image.network(snapshot.data!.docs[index].get("user1_image"),
-
-                        width: 60,
-                        height: 100,
-                        fit: BoxFit.cover,)
-                      :Container(color: Colors.white,padding: EdgeInsets.all(8),child: Icon(Icons.person,size: 40)),
-
-
-
+                    setState(() {
+                      nextScreen(
+                          context, ChatScreen(nick, MyNickname, photoUrl, id));
+                    });
+                    print(chatRoomId);
+                  },
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(100.0),
+                    child: snapshot.data!.docs[index].get("user1") == MyNickname
+                        ? snapshot.data!.docs[index].get("user2_image") != ""
+                            ? Image.network(
+                                snapshot.data!.docs[index].get("user2_image"),
+                                width: 60,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                color: Colors.white,
+                                padding: EdgeInsets.all(8),
+                                child: Icon(Icons.person, size: 40))
+                        : snapshot.data!.docs[index].get("user1_image") != ""
+                            ? Image.network(
+                                snapshot.data!.docs[index].get("user1_image"),
+                                width: 60,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                color: Colors.white,
+                                padding: EdgeInsets.all(8),
+                                child: Icon(Icons.person, size: 40)),
+                  ),
+                  tileColor: Colors.white24,
+                  contentPadding: EdgeInsets.all(10.0),
                 ),
-
-        tileColor: Colors.white24,
-        contentPadding: EdgeInsets.all(10.0),
-      ),
-          )
-          :Container();
-    },
+              )
+            : Container();
+      },
     );
-
-}
+  }
 
   // Widget searchUsersList() {
   //   return StreamBuilder(
@@ -214,8 +225,6 @@ class _HomePageState extends State<HomePage> {
   //   );
   // }
 
-
-
   // string manipulation
   String getId(String res) {
     return res.substring(0, res.indexOf("_"));
@@ -257,9 +266,8 @@ class _HomePageState extends State<HomePage> {
           fit: BoxFit.cover,
         ),
         Scaffold(
-          bottomNavigationBar: MyBottomNavigationBar(),
-          backgroundColor: Colors.transparent,
-
+            bottomNavigationBar: MyBottomNavigationBar(),
+            backgroundColor: Colors.transparent,
             appBar: AppBar(
               actions: [
                 // IconButton(
@@ -276,29 +284,35 @@ class _HomePageState extends State<HomePage> {
               title: const Text(
                 "Чаты",
                 style: TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 27),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 27),
               ),
             ),
             drawer: MyDrawer(),
-            body: SingleChildScrollView(
-                child: StreamBuilder(
-                    stream: FirebaseFirestore.instance.collection('chats')
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (!snapshot.hasData) {
-                        return Text("Нет чатов", textAlign: TextAlign.center,);
-                      }
-                      else {
-                        return chatRoomsList(snapshot, FirebaseAuth.instance.currentUser!.displayName.toString());
-
-                      }
-                    }
-                )
-            )
-        ),
+            body: SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: SingleChildScrollView(
+                  child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('chats')
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (!snapshot.hasData) {
+                          return Text(
+                            "Нет чатов",
+                            textAlign: TextAlign.center,
+                          );
+                        } else {
+                          return chatRoomsList(
+                              snapshot,
+                              FirebaseAuth.instance.currentUser!.displayName
+                                  .toString());
+                        }
+                      })),
+            )),
       ],
     );
   }
-
 }

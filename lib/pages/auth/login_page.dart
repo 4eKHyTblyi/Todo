@@ -29,12 +29,11 @@ class _LoginPageState extends State<LoginPage> {
     return Stack(
       children: [
         Container(
-          decoration: BoxDecoration(
-              boxShadow: [BoxShadow(
-                color: Colors.green,
-
-              )]
-          ),
+          decoration: const BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.green,
+            )
+          ]),
           child: Image.asset(
             "assets/fon2.jpg",
             height: MediaQuery.of(context).size.height,
@@ -52,8 +51,8 @@ class _LoginPageState extends State<LoginPage> {
                 )
               : SingleChildScrollView(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 80),
                     child: Form(
                         key: formKey,
                         child: Column(
@@ -63,23 +62,43 @@ class _LoginPageState extends State<LoginPage> {
                             const Text(
                               "WBRS",
                               style: TextStyle(
-                                  fontSize: 40, fontWeight: FontWeight.bold,color: Colors.white),
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Image(
+                                  image: AssetImage('assets/logo.png'),
+                                  width: 40,
+                                ),
+                                Text(
+                                  "Well-built relationships",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 10),
                             const Text(
-                              "Well-built relationships",
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold,color: Colors.white),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text("Зарегестрируйтесь и знакомьтесь прямо сейчас!",
+                                "Зарегестрируйтесь и знакомьтесь прямо сейчас!",
                                 style: TextStyle(
-                                    fontSize: 15, fontWeight: FontWeight.w400,color: Colors.white)),
-                            SizedBox(height: 10,),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.white)),
+                            const SizedBox(
+                              height: 10,
+                            ),
                             TextFormField(
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                               decoration: textInputDecoration.copyWith(
-                                labelStyle: TextStyle(color: Colors.white),
+                                  labelStyle:
+                                      const TextStyle(color: Colors.white),
                                   labelText: "Email",
                                   prefixIcon: Icon(
                                     Icons.email,
@@ -102,13 +121,13 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             const SizedBox(height: 15),
                             TextFormField(
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                               cursorColor: Colors.white,
                               obscureText: true,
                               decoration: textInputDecoration.copyWith(
-                                fillColor: Colors.white,
-
-                                  labelStyle: TextStyle(color: Colors.white),
+                                  fillColor: Colors.white,
+                                  labelStyle:
+                                      const TextStyle(color: Colors.white),
                                   labelText: "Пароль",
                                   prefixIcon: Icon(
                                     Icons.lock,
@@ -133,27 +152,28 @@ class _LoginPageState extends State<LoginPage> {
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-
                                 style: ElevatedButton.styleFrom(
-                                    backgroundColor: Theme.of(context).primaryColor,
+                                    backgroundColor:
+                                        Theme.of(context).primaryColor,
                                     //primary: Theme.of(context).primaryColor,
                                     elevation: 0,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(30))),
+                                        borderRadius:
+                                            BorderRadius.circular(30))),
                                 child: const Text(
                                   "Вход",
-                                  style:
-                                      TextStyle(color: Colors.white, fontSize: 16),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16),
                                 ),
-                                onPressed: () async{
+                                onPressed: () async {
                                   try {
-                                    final result = await InternetAddress.lookup('example.com');
-                                    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                                    final result = await InternetAddress.lookup(
+                                        'example.com');
+                                    if (result.isNotEmpty &&
+                                        result[0].rawAddress.isNotEmpty) {
                                       login();
                                     }
-                                  } on SocketException catch (_) {
-                                  }
-
+                                  } on SocketException catch (_) {}
                                 },
                               ),
                             ),
@@ -172,7 +192,8 @@ class _LoginPageState extends State<LoginPage> {
                                         decoration: TextDecoration.underline),
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        nextScreen(context, const RegisterPage());
+                                        nextScreen(
+                                            context, const RegisterPage());
                                       }),
                               ],
                             )),

@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:messenger/helper/global.dart';
 import 'package:messenger/helper/helper_function.dart';
 import 'package:messenger/pages/auth/login_page.dart';
 import 'package:messenger/pages/auth/writing_data_user.dart';
@@ -65,11 +68,15 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool _isSignedIn = false;
+  bool _isRegistrationEnd = false;
 
   @override
   void initState() {
     super.initState();
     getUserLoggedInStatus();
+    if (_isSignedIn) {
+      getUserRegistrationStatus();
+    }
   }
 
   getUserLoggedInStatus() async {
@@ -82,6 +89,20 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  getUserRegistrationStatus() {
+    var collection = FirebaseFirestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid);
+
+    collection
+        .get()
+        .then((querySnapshot) => querySnapshot.docs.forEach((result) {
+              setState(() {
+                _isRegistrationEnd = result.data()['isRegistrationEnd'];
+              });
+            }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -89,8 +110,11 @@ class _MyAppState extends State<MyApp> {
           primaryColor: Constants().primaryColor,
           scaffoldBackgroundColor: Colors.white),
       debugShowCheckedModeBanner: false,
-      home: _isSignedIn ? const HomePage() : const LoginPage(),
-
+      home: _isSignedIn
+          ? _isRegistrationEnd
+              ? const HomePage()
+              : const AboutUserWriting()
+          : const LoginPage(),
     );
   }
 }

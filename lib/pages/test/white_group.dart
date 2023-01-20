@@ -11,8 +11,7 @@ class WhitePage extends StatefulWidget {
 }
 
 class _WhitePageState extends State<WhitePage> {
-
-  int counter=0;
+  int counter = 0;
 
   final List<Color> colors = <Color>[
     Colors.grey,
@@ -37,7 +36,7 @@ class _WhitePageState extends State<WhitePage> {
     Colors.grey,
   ];
 
-  final List<String> questions=[
+  final List<String> questions = [
     "спокойны и хладнокровны",
     "последовательны и обстоятельны в делах",
     'осторожны и рассудительны',
@@ -52,7 +51,6 @@ class _WhitePageState extends State<WhitePage> {
     'маловосприимчивы к одобрению и порицанию',
     'незлобивы, проявляете снисходительное отношение к колкостям в свой адрес',
     'постоянны в своих отношениях и интересах',
-
     'медленно включаетесь в работу и медленно переключаетесь с одного дела на другое',
     'ровны в отношениях со всеми',
     'любите аккуратность и порядок во всем',
@@ -66,12 +64,11 @@ class _WhitePageState extends State<WhitePage> {
     return Stack(
       children: [
         Container(
-          decoration: BoxDecoration(
-              boxShadow: [BoxShadow(
-                color: Colors.green,
-
-              )]
-          ),
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.green,
+            )
+          ]),
           child: Image.asset(
             "assets/fon.jpg",
             height: MediaQuery.of(context).size.height,
@@ -81,14 +78,17 @@ class _WhitePageState extends State<WhitePage> {
           ),
         ),
         Scaffold(
-          backgroundColor: Colors.transparent,
-            appBar: AppBar(title: Text("Tecт",),),
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: Text(
+                "Tecт",
+              ),
+            ),
             body: SingleChildScrollView(
                 physics: AlwaysScrollableScrollPhysics(),
                 child: Container(
                   width: 800,
                   height: 1160,
-
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                   child: Column(
                     children: [
@@ -98,78 +98,90 @@ class _WhitePageState extends State<WhitePage> {
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: colors.length,
-                            itemBuilder: (_, int index){
-
+                            itemBuilder: (_, int index) {
                               return QuestionBuilder(index);
-                            }
-                        ),
+                            }),
                       ),
-                      SizedBox(height: 30,),
-                      ElevatedButton(onPressed: (){
-                        setState(() {
-                          WhiteGroup=counter;
-                        });
-                        nextScreen(context, OrangePage());
-                        }, child: Text("Дальше"))
+                      SizedBox(
+                        height: 30,
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              WhiteGroup = counter;
+                            });
+                            nextScreen(context, OrangePage());
+                          },
+                          child: Text("Дальше"))
                     ],
                   ),
-                )
-            )
-        ),
+                ))),
       ],
     );
   }
-  QuestionBuilder(int index){
+
+  QuestionBuilder(int index) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(width: 230,child: Text(questions[index],style: TextStyle(color: Colors.white))),
-            Row(
-              children: [
-                ElevatedButton(
-
-                  onPressed: (){
-                    setState(() {
-
-                      colors[index]=Colors.green;
-                      counter++;
-
-                    });
-                  }, child: Text("+",style: TextStyle(fontSize: 25),),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: colors[index]==Colors.red?Colors.grey:colors[index]
-                  ),
-
-                ),
-                SizedBox(width: 10,),
-                ElevatedButton(
-
-                  onPressed: (){
-                    if(counter!=0){
+            SizedBox(
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: Text(questions[index],
+                    style: const TextStyle(color: Colors.white))),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.35,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
                       setState(() {
-                        counter--;
+                        colors[index] = Colors.green;
+                        counter++;
                       });
-                    }
-                    setState(() {
-                      colors[index]=Colors.red;
-                    });
-                  }, child: Text("-",style: TextStyle(fontSize: 25),),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: colors[index]==Colors.green?Colors.grey:colors[index]
+                    },
+                    child: const Text(
+                      "+",
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: colors[index] == Colors.red
+                            ? Colors.grey
+                            : colors[index]),
                   ),
-
-                ),
-              ],
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (counter != 0) {
+                        setState(() {
+                          counter--;
+                        });
+                      }
+                      setState(() {
+                        colors[index] = Colors.red;
+                      });
+                    },
+                    child: const Text(
+                      "-",
+                      style: TextStyle(fontSize: 25),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: colors[index] == Colors.green
+                            ? Colors.grey
+                            : colors[index]),
+                  ),
+                ],
+              ),
             ),
-
           ],
         ),
-        SizedBox(height: 10,)
+        const SizedBox(
+          height: 10,
+        )
       ],
     );
   }
 }
-
-
