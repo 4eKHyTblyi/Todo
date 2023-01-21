@@ -28,6 +28,7 @@ List Images = [];
 int selectedIndex = 1;
 
 //Filter data
+<<<<<<< HEAD
 String FiltrPol = "";
 RangeValues currentValues = const RangeValues(18, 22);
 
@@ -39,3 +40,30 @@ TextStyle h2_light = const TextStyle(
 
 TextStyle H3 = const TextStyle(
     color: Colors.white, fontWeight: FontWeight.w200, fontSize: 18);
+=======
+String FiltrPol="";
+RangeValues currentValues= const RangeValues(18, 22);
+
+
+TextStyle h1_light =
+const TextStyle(
+  color: Colors.white,
+  fontWeight: FontWeight.w100,
+  fontSize: 32
+);
+
+TextStyle h2_light =
+const TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.w100,
+    fontSize: 22
+);
+
+TextStyle H3 =
+const TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.w200,
+    fontSize: 18
+);
+
+>>>>>>> 9b32477d480aa34a11a36e7dc77903c65c89bf95
